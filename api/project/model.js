@@ -1,17 +1,13 @@
 // build your `Project` model here
 const db = require('../../data/dbConfig')
+const helpers = require('../middleware/middlewares')
 
 const getProjects = async () => {
-    try{
-        const projects = await db('projects')
-        return projects.map(project => {
-            project.project_completed === 0 ?
-            {...project, project_completed: false} :
-            {...project, project_completed: true}
-        })
-    } catch(err){
-        return {err: 'not getting projects'}
-    }
+    const getProject = db('projects as pr')
+    .select('pr.project_name', 'pr.project_description', 'pr.project_completed')
+        return getProject.then(projects=>{
+        return projects.map(project=> helpers.projectToBody(project))
+})
 }
 
 const getById = async (project_id) =>{
